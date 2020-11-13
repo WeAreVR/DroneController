@@ -2,7 +2,7 @@
 #include "WiFi.h"
 #include "AsyncUDP.h"
 
-const char * ssid = "lego";
+const char * ssid = "lego-robot";
 const char * password = "lego-2016";
 
 
@@ -14,7 +14,7 @@ bool inAir = false;
 
 const int switchPin = 17;
 const int drejeTingPin = 13;
-const int xPin = 26;
+const int xPin = 21;
 const int yPin = 2;
 const int button = 04;
 const int ccwButton = 14;
@@ -30,12 +30,12 @@ void setup() {
   pinMode(switchPin, INPUT_PULLDOWN);
   pinMode(drejeTingPin, INPUT);
   pinMode(button, INPUT_PULLUP);
-  pinMode(cwButton, INPUT_PULLUP);
-  pinMode(ccwButton, INPUT_PULLUP);
+  pinMode(cwButton, INPUT_PULLDOWN);
+  pinMode(ccwButton, INPUT_PULLDOWN);
   pinMode(xPin, INPUT);
   pinMode(yPin, INPUT);  
   Serial.begin(9600);
-
+/*
  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   if (WiFi.waitForConnectResult() != WL_CONNECTED) {
@@ -70,14 +70,14 @@ void setup() {
       packet.printf("Got %u bytes of data", packet.length());
     }); 
   }
-
+*/
  
 }
 
 
 void sendMessage(String msg){
   udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
-              IPAddress(192, 168, 0, 140), 4000);
+              IPAddress(192, 168, 1, 17), 4001);
 
 
 }
@@ -151,7 +151,6 @@ switch (movement){
 }
 
 
-
 void loop() {
 int buttonState = digitalRead(button);
 int cwButtonState = digitalRead(cwButton);
@@ -178,7 +177,7 @@ if (yVal < 1000){                                        doStuff(backward);}
 
   
   //sendMessage("THOMAAAÅAS");
-  // delay(1000);
+  delay(1000);
  
  
  
@@ -186,16 +185,10 @@ if (yVal < 1000){                                        doStuff(backward);}
 formatPrintJoystickValues(getJoystickValues());
 
 Serial.println(cwButtonState);
-Serial.println(ccwButtonState);
-Serial.println(buttonState);
-Serial.println(drejeTingValue);
-Serial.println(switchState);
-
-
 //Serial.println(cwButtonState);
 
 
 
- delay(1000);
+ delay(200);
 
 }
