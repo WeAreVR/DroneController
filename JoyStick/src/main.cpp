@@ -13,9 +13,9 @@ enum Movement{
 bool inAir = false;
 
 const int switchPin = 17;
-const int drejeTingPin = 13;
-const int xPin = 21;
-const int yPin = 2;
+const int drejeTingPin = 36;
+const int xPin = 39;
+const int yPin = 34;
 const int button = 04;
 const int ccwButton = 14;
 const int cwButton = 15;
@@ -26,16 +26,16 @@ AsyncUDP udp;
 
 
 void setup() {
-  
+
   pinMode(switchPin, INPUT_PULLDOWN);
   pinMode(drejeTingPin, INPUT);
   pinMode(button, INPUT_PULLUP);
   pinMode(cwButton, INPUT_PULLDOWN);
   pinMode(ccwButton, INPUT_PULLDOWN);
   pinMode(xPin, INPUT);
-  pinMode(yPin, INPUT);  
+  pinMode(yPin, INPUT);
   Serial.begin(9600);
-/*
+
  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   if (WiFi.waitForConnectResult() != WL_CONNECTED) {
@@ -68,10 +68,10 @@ void setup() {
 
       // reply to the client/sender
       packet.printf("Got %u bytes of data", packet.length());
-    }); 
+    });
   }
-*/
- 
+
+
 }
 
 
@@ -83,7 +83,7 @@ void sendMessage(String msg){
 }
 
 
-
+/*
 bool isInDeadZone(std::pair<int,int> joystick) {
   int joyXCenterVal = 1715;
   int joyYCenterVal = 1776;
@@ -104,13 +104,14 @@ std::pair<int, int> getJoystickValues() {
   return std::make_pair(xVal, yVal);
 }
 
+*/
 bool isButtonPressed(int buttonState){
  if (buttonState == 0){
    return true;
  } else {
    return false;
  }
-  
+
 }
 
 void doStuff(Movement movement){
@@ -168,23 +169,22 @@ if (!isButtonPressed(switchState) && inAir){             doStuff(land);}
 if (drejeTingValue > 3900){                              doStuff(up);}
 if (drejeTingValue < 200){                               doStuff(down);}
 if (xVal > 3000){                                        doStuff(right);}
-if (xVal < 1000){                                        doStuff(left);} 
+if (xVal < 1000){                                        doStuff(left);}
 if (yVal > 3000){                                        doStuff(forward);}
 if (yVal < 1000){                                        doStuff(backward);}
 
 
 
 
-  
+
   //sendMessage("THOMAAAÅAS");
   delay(1000);
- 
- 
- 
 
-formatPrintJoystickValues(getJoystickValues());
 
-Serial.println(cwButtonState);
+
+
+
+//Serial.println(cwButtonState);
 //Serial.println(cwButtonState);
 
 
