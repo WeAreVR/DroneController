@@ -24,15 +24,17 @@
                 <RowConstraints maxHeight="113.0" minHeight="0.0" prefHeight="62.333333333333336" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="240.0" minHeight="10.0" prefHeight="59.00000000000001" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="290.99999237060547" minHeight="10.0" prefHeight="90.66666666666666" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="290.99999237060547" minHeight="10.0" prefHeight="233.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="356.66665140787757" minHeight="10.0" prefHeight="173.66666666666669" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="290.99999237060547" minHeight="10.0" prefHeight="111.33333333333333" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="356.66665140787757" minHeight="10.0" prefHeight="122.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="356.66665140787757" minHeight="10.0" prefHeight="218.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <Label fx:id="labelHeight" text="Height" />
                   <Label fx:id="textHeight" text="Insert Height" GridPane.rowIndex="1" />
-                  <Button fx:id="BTNStart" mnemonicParsing="false" onAction="#start" text="start" GridPane.rowIndex="2" />
+                  <Button fx:id="BTNStart" mnemonicParsing="false" onAction="#restart" text="start" GridPane.rowIndex="2" />
                   <Button fx:id="BTNNed" mnemonicParsing="false" onAction="#ned" text="v" GridPane.rowIndex="3" />
-                  <Button fx:id="BTNHøjre" mnemonicParsing="false" onAction="#højre" text="--&gt;" GridPane.rowIndex="4" />
+                  <Button fx:id="BTNHøjre" mnemonicParsing="false" onAction="#rotateCW" text="Rotate" GridPane.rowIndex="4" />
+                  <Button mnemonicParsing="false" onAction="#move" text="Move" GridPane.rowIndex="5" />
                </children>
                <BorderPane.margin>
                   <Insets left="20.0" />

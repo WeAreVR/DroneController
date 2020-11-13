@@ -20,12 +20,13 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, 950, 600));
         primaryStage.setResizable(false);
         primaryStage.show();
+
+        Udp thread = new Udp();
+        thread.start();
     }
 
 
     public static void main(String[] args) throws SocketException {
         launch(args);
-        Udp server = new Udp();
-        server.run();
     }
 }

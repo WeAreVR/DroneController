@@ -7,8 +7,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.SocketException;
 
 public class Controller {
     public Label textHeight;
@@ -18,71 +20,108 @@ public class Controller {
     public Button BTNNed;
     public Button BTNStart;
     Image characterPicture;
+    static Drone drone;
+    static double paneHeight;
+    static double paneWidth;
 
-    {
-        try {
-            characterPicture = new Image(new FileInputStream("C:/Users/louis/OneDrive - Roskilde Universitet/RUC/Datalogi/Software Development/IDS projekt yay/flotDrone.png"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
-    ImageView imageView = new ImageView();
-
-    public void initialize() throws FileNotFoundException {
+    public void initialize() throws FileNotFoundException, SocketException {
         // runs when application GUI is ready
         System.out.println("ready!");
 
-        // set image and image size
-        imageView.setImage(characterPicture);
-        imageView.setFitHeight(50);
-        imageView.setFitWidth(50);
+        drone = new Drone();
 
         // set background to POWDERBLUE
         pane.setBackground(new Background(new BackgroundFill(Color.POWDERBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+        paneHeight = pane.getHeight();
+        paneWidth = pane.getWidth();
     }
 
-    public void start() {
-        if(pane.getChildren() != null) {
-            pane.getChildren().remove(imageView);
-            imageView.setTranslateX(0);
-            imageView.setTranslateY(0);
+    public void restart() {
+        if (pane.getChildren() != null) {
+            pane.getChildren().remove(drone.getImageView());
         }
 
-        // Set start position for imageView
-        System.out.println(imageView.getFitHeight());
-        imageView.setX(pane.getWidth() / 2 - (imageView.getFitWidth() / 2));
-        imageView.setY(pane.getHeight() / 2 - (imageView.getFitHeight() / 2));
-        pane.getChildren().add(imageView);
+        drone.restart();
+        double startX = pane.getWidth() / 2 - (drone.getDroneSize() / 2);
+        double startY = pane.getHeight() / 2 - (drone.getDroneSize() / 2);
+        drone.setStartPos(startX, startY);
+        pane.getChildren().add(drone.getImageView());
     }
-
-
 
 
     public void ned() throws FileNotFoundException {
-        labelHeight.setText("TranslateX: " + imageView.getTranslateX() + "\nTranslateY: " + imageView.getTranslateY());
-        textHeight.setText("X: " + imageView.getX() + "\nY: " + imageView.getY());
+        labelHeight.setText("Height: " + drone.getHeight());
+        textHeight.setText("");
 
+        /*
         // If the image hits the bounds of pane, DON'T MOVE
-        if (imageView.getTranslateY() > (pane.getHeight() / 2) - imageView.getFitHeight() / 2) {
+        if (imageView1.getTranslateY() > (pane.getHeight() / 2) - imageView1.getFitHeight() / 2) {
             System.out.println("hov. EXPLOSION****");
         } else {
-            imageView.setTranslateY(imageView.getTranslateY() + 5);
+            imageView1.setTranslateY(imageView1.getTranslateY() + 5);
 
-            imageView.setRotate(imageView.getRotate() + 90);
+            imageView1.setRotate(imageView1.getRotate() + 5);
+        }*/
+    }
+
+
+    public void rotateCW() throws FileNotFoundException {
+        drone.rotateCW();
+
+    }
+
+    public void move() {
+        // If the image hits the bounds of pane, DON'T MOVE
+        if (drone.isOutsideBounds(pane.getWidth(), pane.getHeight())) {
+            System.out.println("EXPLOSION**** #soundeffects");
+        } else {
+            drone.up();
         }
     }
 
-    public void højre() throws FileNotFoundException {
-        labelHeight.setText("TranslateX: " + imageView.getTranslateX() + "\nTranslateY: " + imageView.getTranslateY());
-        textHeight.setText("X: " + imageView.getX() + "\nY: " + imageView.getY());
+    public static void doStuff(String command) throws FileNotFoundException {
+        if (drone.inAir || command.equals("takeOff")) {
+            switch (command) {
+                case "land":
+                    drone.land();
+                    break;
+                case "takeOff":
+                    drone.takeOff();
+                    break;
+                case "up":
+                    drone.up();
+                    break;
+                case "down":
+                    drone.down();
+                    break;
+                case "forward":
+                    drone.moveForward();
+                    break;
+                case "back":
+                    drone.moveBackwards();
+                    break;
+                case "cw":
+                    drone.rotateCW();
+                    break;
+                case "ccw":
+                    drone.rotateCCW();
+                    break;
+                case "left":
+                    drone.moveLeft();
+                    break;
+                case "right":
+                    drone.moveRight();
+                    break;
+                case " ":
+                    System.out.printf("mellemrum");
+                default:
+                    System.out.println("Invalid command");
 
-        // If the image hits the bounds of pane, DON'T MOVE
-        if (imageView.getTranslateX() > (pane.getWidth() / 2) - imageView.getFitWidth() / 2) {
-            System.out.println("hov. EXPLOSION****");
-        } else {
-            imageView.setTranslateX(imageView.getTranslateX() + 10);
+            }
+            System.out.println("Height: " + drone.getHeight() + " inAir: " + drone.inAir);
         }
     }
 }
+
 

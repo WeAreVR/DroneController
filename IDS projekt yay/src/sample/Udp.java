@@ -22,6 +22,11 @@ public class Udp extends Thread {
         socket = new DatagramSocket(4001);
     }
 
+    public static void main(String[] args) throws SocketException {
+        Udp server = new Udp();
+        server.start();
+    }
+
     public void run() {
         System.out.println("Running server on port " + this.socket.getLocalPort());
         running = true;
@@ -50,7 +55,9 @@ public class Udp extends Thread {
                 received = received.trim();
                 String contents = "HAllO. Du skrev: " + received;
                 DatagramPacket p = new DatagramPacket(contents.getBytes(), contents.length(), address, port);
-                socket.send(p);
+                //socket.send(p);
+                System.out.println(received);
+                iGotSomething();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -60,5 +67,9 @@ public class Udp extends Thread {
 
     public String getReceived() {
         return received;
+    }
+
+    public void iGotSomething() throws FileNotFoundException {
+        Controller.doStuff(received);
     }
 }
