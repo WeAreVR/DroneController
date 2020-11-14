@@ -25,7 +25,6 @@ public class Main extends Application {
         thread.start();
     }
 
-
     public static void main(String[] args) throws SocketException {
         launch(args);
     }

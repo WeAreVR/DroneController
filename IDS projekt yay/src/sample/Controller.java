@@ -3,26 +3,21 @@ package sample;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.SocketException;
 
 public class Controller {
-    public Label textHeight;
-    public Label labelHeight;
+    public Label lblHeight;
+    public Label lblDistance;
     public Pane pane;
-    public Button BTNHøjre;
-    public Button BTNNed;
-    public Button BTNStart;
-    Image characterPicture;
+    public Button btnStart;
     static Drone drone;
     static double paneHeight;
     static double paneWidth;
+    public Label lblYouCrashed;
 
 
     public void initialize() throws FileNotFoundException, SocketException {
@@ -33,14 +28,17 @@ public class Controller {
 
         // set background to POWDERBLUE
         pane.setBackground(new Background(new BackgroundFill(Color.POWDERBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-        paneHeight = pane.getHeight();
-        paneWidth = pane.getWidth();
     }
 
     public void restart() {
         if (pane.getChildren() != null) {
             pane.getChildren().remove(drone.getImageView());
         }
+        paneHeight = pane.getHeight();
+        paneWidth = pane.getWidth();
+
+        updateLabels();
+        lblYouCrashed.setText(" ");
 
         drone.restart();
         double startX = pane.getWidth() / 2 - (drone.getDroneSize() / 2);
@@ -49,77 +47,105 @@ public class Controller {
         pane.getChildren().add(drone.getImageView());
     }
 
-
-    public void ned() throws FileNotFoundException {
-        labelHeight.setText("Height: " + drone.getHeight());
-        textHeight.setText("");
-
-        /*
-        // If the image hits the bounds of pane, DON'T MOVE
-        if (imageView1.getTranslateY() > (pane.getHeight() / 2) - imageView1.getFitHeight() / 2) {
-            System.out.println("hov. EXPLOSION****");
-        } else {
-            imageView1.setTranslateY(imageView1.getTranslateY() + 5);
-
-            imageView1.setRotate(imageView1.getRotate() + 5);
-        }*/
-    }
-
-
-    public void rotateCW() throws FileNotFoundException {
-        drone.rotateCW();
-
-    }
-
     public void move() {
         // If the image hits the bounds of pane, DON'T MOVE
-        if (drone.isOutsideBounds(pane.getWidth(), pane.getHeight())) {
+        if (drone.isOutsideBounds(paneWidth, paneHeight)) {
+            System.out.println("EXPLOSION**** #soundeffects");
+            lblYouCrashed.setText("You crashed! Try again...");
+        } else {
+            drone.moveForward();
+        }
+        updateLabels();
+    }
+
+    public void up() {
+        // If the image hits the bounds of pane, DON'T MOVE
+        if (drone.isOutsideBounds(paneWidth, paneHeight)) {
             System.out.println("EXPLOSION**** #soundeffects");
         } else {
             drone.up();
         }
+        updateLabels();
     }
 
-    public static void doStuff(String command) throws FileNotFoundException {
-        if (drone.inAir || command.equals("takeOff")) {
-            switch (command) {
-                case "land":
-                    drone.land();
-                    break;
-                case "takeOff":
-                    drone.takeOff();
-                    break;
-                case "up":
-                    drone.up();
-                    break;
-                case "down":
-                    drone.down();
-                    break;
-                case "forward":
-                    drone.moveForward();
-                    break;
-                case "back":
-                    drone.moveBackwards();
-                    break;
-                case "cw":
-                    drone.rotateCW();
-                    break;
-                case "ccw":
-                    drone.rotateCCW();
-                    break;
-                case "left":
-                    drone.moveLeft();
-                    break;
-                case "right":
-                    drone.moveRight();
-                    break;
-                case " ":
-                    System.out.printf("mellemrum");
-                default:
-                    System.out.println("Invalid command");
+    public void down() {
+        // If the image hits the bounds of pane, DON'T MOVE
+        if (drone.isOutsideBounds(paneWidth, paneHeight)) {
+            System.out.println("EXPLOSION**** #soundeffects");
+        } else {
+            drone.down();
+        }
+        updateLabels();
+    }
 
+
+    public void cw() throws FileNotFoundException {
+        // If the image hits the bounds of pane, DON'T MOVE
+        if (drone.isOutsideBounds(paneWidth, paneHeight)) {
+            System.out.println("EXPLOSION**** #soundeffects");
+        } else {
+            drone.rotateCW();
+        }
+        updateLabels();
+    }
+
+
+    public void ccw() throws FileNotFoundException {
+        // If the image hits the bounds of pane, DON'T MOVE
+        if (drone.isOutsideBounds(paneWidth, paneHeight)) {
+            System.out.println("EXPLOSION**** #soundeffects");
+        } else {
+            drone.rotateCCW();
+        }
+        updateLabels();
+    }
+
+    public void updateLabels(){
+        lblHeight.setText("" + drone.getHeight());
+        lblDistance.setText("" + drone.getDistance());
+    }
+
+
+    public static void doStuff(String command) throws FileNotFoundException {
+        if (!drone.isOutsideBounds(paneWidth, paneHeight)) {
+            if (drone.inAir || command.equals("takeOff")) {
+                switch (command) {
+                    case "land":
+                        drone.land();
+                        break;
+                    case "takeOff":
+                        drone.takeOff();
+                        break;
+                    case "up":
+                        drone.up();
+                        break;
+                    case "down":
+                        drone.down();
+                        break;
+                    case "forward":
+                        drone.moveForward();
+                        break;
+                    case "back":
+                        drone.moveBackwards();
+                        break;
+                    case "cw":
+                        drone.rotateCW();
+                        break;
+                    case "ccw":
+                        drone.rotateCCW();
+                        break;
+                    case "left":
+                        drone.moveLeft();
+                        break;
+                    case "right":
+                        drone.moveRight();
+                        break;
+                    default:
+                        System.out.println("Invalid command");
+                }
             }
-            System.out.println("Height: " + drone.getHeight() + " inAir: " + drone.inAir);
+            System.out.println("Command: " + command);
+            System.out.println("Height: " + drone.getHeight() + " inAir: " + drone.inAir + " PaneWidth: " + paneWidth);
         }
     }
 }

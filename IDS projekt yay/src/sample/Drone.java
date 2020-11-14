@@ -4,6 +4,7 @@ import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -21,19 +22,34 @@ public class Drone {
     double height = 0;
     double maxHeight = 100;
     boolean inAir = false;
+    boolean isDead = false;
     double distance = 0;
-    Image drone;
+    Image droneImage;
+    Image droneImageDead;
     ImageView imageView = new ImageView();
+
+
+    public Label lblYouCrashed;
+
 
 
     public Drone() {
         try {
-            drone = new javafx.scene.image.Image(new FileInputStream("C:/Users/louis/OneDrive - Roskilde Universitet/RUC/Datalogi/Software Development/IDS projekt yay/flotDrone.png"));
+            droneImage = new javafx.scene.image.Image(new FileInputStream("C:/Users/louis/OneDrive - Roskilde Universitet/RUC/Datalogi/Software Development/IDS projekt yay/flotDroneNoBG.png"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
-        imageView.setImage(drone);
+        try {
+            droneImageDead = new javafx.scene.image.Image(new FileInputStream("C:/Users/louis/OneDrive - Roskilde Universitet/RUC/Datalogi/Software Development/IDS projekt yay/flotDroneDeadNoBG.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+
+
+        imageView.setImage(droneImage);
         imageView.setFitHeight(startDroneSize);
         imageView.setFitWidth(startDroneSize);
     }
@@ -52,7 +68,10 @@ public class Drone {
         imageView.setRotate(angle);
         resize(startDroneSize);
         droneSize = startDroneSize;
+        isDead = false;
+        imageView.setImage(droneImage);
     }
+
 
     public void setHeight(double height) {
         this.height = height;
@@ -60,6 +79,19 @@ public class Drone {
 
     public double getHeight() {
         return height;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void collision(){
+        isDead = true;
+        imageView.setImage(droneImageDead);
+    }
+
+    public boolean getIsDead(){
+        return isDead;
     }
 
     public ImageView getImageView() {
@@ -94,6 +126,7 @@ public class Drone {
         xPos += speed * sin(angleRadian);
         yPos -= speed * cos(angleRadian);
 
+        distance += speed;
         setPosition(xPos, yPos);
     }
 
@@ -102,6 +135,7 @@ public class Drone {
         xPos -= speed * sin(angleRadian);
         yPos += speed * cos(angleRadian);
 
+        distance += speed;
         setPosition(xPos, yPos);
     }
 
@@ -110,6 +144,7 @@ public class Drone {
         xPos -= speed * cos(angleRadian);
         yPos -= speed * sin(angleRadian);
 
+        distance += speed;
         setPosition(xPos, yPos);
     }
 
@@ -118,6 +153,7 @@ public class Drone {
         xPos += speed * cos(angleRadian);
         yPos += speed * sin(angleRadian);
 
+        distance += speed;
         setPosition(xPos, yPos);
     }
 
@@ -141,7 +177,9 @@ public class Drone {
 
     public void down() {
         if (height > 0) {
-            height -= 10;
+            height -= 5;
+            droneSize -= 7;
+            resize(droneSize);
         }
     }
 
@@ -173,12 +211,13 @@ public class Drone {
 
     public boolean isOutsideBounds(double paneWidth, double paneHeight) {
         boolean res;
-        if (xPos > (paneWidth / 2) - droneSize || yPos > (paneHeight / 2 - droneSize) || xPos < (-paneWidth / 2) || yPos < (-paneHeight / 2)) {
+        if (xPos > (paneWidth / 2) - droneSize / 2 || yPos > (paneHeight / 2 - droneSize / 2) || xPos < (-paneWidth / 2) + droneSize / 2 || yPos < (-paneHeight / 2) + droneSize / 2) {
             res = true;
+            isDead = true;
+            collision();
         } else {
             res = false;
         }
-
         return res;
     }
 
