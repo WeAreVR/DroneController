@@ -2,21 +2,30 @@
 #include "WiFi.h"
 #include "AsyncUDP.h"
 
-const char * ssid = "lego-robot";
-const char * password = "lego-2016";
+const char *ssid = "Mit Mobile Hotspot. Stay away";
+const char *password = "x½";
 
-
-enum Movement{
-  left, right, forward, backward, stay, up, down, land, takeOff, cw, ccw
+enum Movement
+{
+  left,
+  right,
+  forward,
+  backward,
+  stay,
+  up,
+  down,
+  land,
+  takeOff,
+  cw,
+  ccw
 
 };
 bool inAir = false;
 
 const int switchPin = 17;
-const int drejeTingPin = 36;
-const int xPin = 39;
-const int yPin = 34;
-const int button = 04;
+const int potentiometer = 36;
+const int yPin = 39;
+const int xPin = 34;
 const int ccwButton = 14;
 const int cwButton = 15;
 
@@ -24,17 +33,18 @@ String speed = "21";
 
 AsyncUDP udp;
 
-
-void setup() {
+void setup()
+{
 
   pinMode(switchPin, INPUT_PULLDOWN);
-  pinMode(drejeTingPin, INPUT);
-  pinMode(button, INPUT_PULLUP);
-  pinMode(cwButton, INPUT_PULLDOWN);
-  pinMode(ccwButton, INPUT_PULLDOWN);
+  pinMode(potentiometer, INPUT);
+  pinMode(cwButton, INPUT_PULLUP);
+  pinMode(ccwButton, INPUT_PULLUP);
   pinMode(xPin, INPUT);
   pinMode(yPin, INPUT);
   Serial.begin(9600);
+
+  
 
  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -68,127 +78,131 @@ void setup() {
 
       // reply to the client/sender
       packet.printf("Got %u bytes of data", packet.length());
-    });
+    }); 
   }
-
 
 }
 
 
 void sendMessage(String msg){
   udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
-              IPAddress(192, 168, 1, 17), 4001);
-
-
-}
-
-
-/*
-bool isInDeadZone(std::pair<int,int> joystick) {
-  int joyXCenterVal = 1715;
-  int joyYCenterVal = 1776;
-  int offset = 150;
-  bool deadX = joystick.first < joyXCenterVal + offset && joystick.first > joyXCenterVal - offset;
-  bool deadY = joystick.second < joyYCenterVal + offset && joystick.second > joyYCenterVal - offset;
-  return deadX && deadY;
-}
-
-void formatPrintJoystickValues(std::pair<int,int> joystick) {
-  String s = "X: " + String(joystick.first) + ", Y: " + String(joystick.second);
-  Serial.println(s);
-}
-
-std::pair<int, int> getJoystickValues() {
-  int xVal = analogRead(xPin);
-  int yVal = analogRead(yPin);
-  return std::make_pair(xVal, yVal);
-}
-
-*/
-bool isButtonPressed(int buttonState){
- if (buttonState == 0){
-   return true;
- } else {
-   return false;
- }
+              IPAddress(192, 168, 43, 57), 4001);
+Serial.println(msg);
 
 }
 
-void doStuff(Movement movement){
-switch (movement){
+
+
+
+bool isButtonPressed(int buttonState)
+{
+  if (buttonState == 0)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+void doStuff(Movement movement)
+{
+  switch (movement)
+  {
   case left:
-  sendMessage("left " + speed );
-  break;
+    sendMessage("left");
+    break;
   case right:
-  sendMessage("right " + speed);
-  break;
+    sendMessage("right");
+    break;
   case forward:
-  sendMessage("forward " + speed);
-  break;
+    sendMessage("forward");
+    break;
   case backward:
-  sendMessage("back " + speed);
-  break;
+    sendMessage("back");
+    break;
   case land:
-  sendMessage("land");
-  inAir = false;
-  break;
+    sendMessage("land");
+    inAir = false;
+    break;
   case takeOff:
-  sendMessage("takeOff");
-  inAir = true;
-  break;
+    sendMessage("takeOff");
+    inAir = true;
+    break;
   case cw:
-  sendMessage("cw " + speed);
-  break;
+    sendMessage("cw");
+    break;
   case ccw:
-  sendMessage("ccw " + speed);
-  break;
+    sendMessage("ccw");
+    break;
   case up:
-  sendMessage("up " + speed);
-  break;
+    sendMessage("up");
+    break;
   case down:
-  sendMessage("down " + speed);
-  break;
-}
+    sendMessage("down");
+    break;
+  default:
+    sendMessage("hallo");
+    break;
+  }
 }
 
-
-void loop() {
-int buttonState = digitalRead(button);
-int cwButtonState = digitalRead(cwButton);
-int ccwButtonState = digitalRead(ccwButton);
-int drejeTingValue = analogRead(drejeTingPin);
-int switchState = digitalRead(switchPin);
+void loop()
+{
+  int cwButtonState = digitalRead(cwButton);
+  int ccwButtonState = digitalRead(ccwButton);
+  int potentiometerValue = analogRead(potentiometer);
+  int switchState = digitalRead(switchPin);
   int xVal = analogRead(xPin);
   int yVal = analogRead(yPin);
 
-if (isButtonPressed(cwButtonState)){                     doStuff(cw);}
-if (isButtonPressed(ccwButtonState)){                    doStuff(ccw);}
-if (isButtonPressed(cwButtonState && ccwButtonState)){   doStuff(stay);}
-if (isButtonPressed(switchState) && !inAir){             doStuff(takeOff);}
-if (!isButtonPressed(switchState) && inAir){             doStuff(land);}
-if (drejeTingValue > 3900){                              doStuff(up);}
-if (drejeTingValue < 200){                               doStuff(down);}
-if (xVal > 3000){                                        doStuff(right);}
-if (xVal < 1000){                                        doStuff(left);}
-if (yVal > 3000){                                        doStuff(forward);}
-if (yVal < 1000){                                        doStuff(backward);}
+  if (isButtonPressed(cwButtonState))
+  {
+    doStuff(cw);
+  }
+  if (isButtonPressed(ccwButtonState))
+  {
+    doStuff(ccw);
+  }
+  if (isButtonPressed(cwButtonState && ccwButtonState))
+  {
+    doStuff(stay);
+  }
+  if (isButtonPressed(switchState) && !inAir)
+  {
+    doStuff(takeOff);
+  }
+  if (!isButtonPressed(switchState) && inAir)
+  {
+    doStuff(land);
+  }
+  if (potentiometerValue > 3900)
+  {
+    doStuff(up);
+  }
+  if (potentiometerValue < 200)
+  {
+    doStuff(down);
+  }
+  if (xVal > 3000)
+  {
+    doStuff(right);
+  }
+  if (xVal < 1000)
+  {
+    doStuff(left);
+  }
+  if (yVal > 3000)
+  {
+    doStuff(forward);
+  }
+  if (yVal < 1000)
+  {
+    doStuff(backward);
+  }
 
+  
 
-
-
-
-  //sendMessage("THOMAAAÅAS");
-  delay(1000);
-
-
-
-
-
-//Serial.println(cwButtonState);
-//Serial.println(cwButtonState);
-
-
-
- delay(200);
-
+  delay(100);
 }
