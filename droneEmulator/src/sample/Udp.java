@@ -16,7 +16,7 @@ public class Udp extends Thread {
     private boolean running;
     private byte[] buf = new byte[256];
     public String received = "000";
-
+    Controller control;
 
     public Udp() throws SocketException {
         socket = new DatagramSocket(4001);
@@ -47,29 +47,25 @@ public class Udp extends Thread {
             received
                     = new String(packet.getData(), 0, packet.getLength());
 
+            //if command is end, the server stops
             if (received.equals("end")) {
                 running = false;
                 continue;
             }
             try {
+                //removes any spaces in received ("hallo   " becomes "hallo"
                 received = received.trim();
-                String contents = "HAllO. Du skrev: " + received;
-                DatagramPacket p = new DatagramPacket(contents.getBytes(), contents.length(), address, port);
-                //socket.send(p);
                 System.out.println(received);
-                iGotSomething();
-            } catch (IOException e) {
+                udpReceivedSomething();
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
         socket.close();
     }
 
-    public String getReceived() {
-        return received;
-    }
-
-    public void iGotSomething() throws FileNotFoundException {
-        Controller.doStuff(received);
+    //send received command to Controller
+    public void udpReceivedSomething() throws FileNotFoundException, InterruptedException {
+        Controller.controlDrone(received);
     }
 }
